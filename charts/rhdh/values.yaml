@@ -316,7 +316,7 @@ global:
                     importName: TektonCI
                     mountPoint: entity.page.ci/cards
 
-  clusterRouterBase: apps.rosa.redhat-ai-dev.m6no.p3.openshiftapps.com
+  clusterRouterBase: ${RHDH_CLUSTER_ROUTER_BASE}
   host: ""
   auth:
     backend:
