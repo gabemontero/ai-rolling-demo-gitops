@@ -316,7 +316,7 @@ global:
                     importName: TektonCI
                     mountPoint: entity.page.ci/cards
 
-  clusterRouterBase: ${RHDH_CLUSTER_ROUTER_BASE}
+  clusterRouterBase: apps.gmontero419.devcluster.openshift.com
   host: ""
   auth:
     backend:
