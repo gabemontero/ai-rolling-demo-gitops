@@ -7,8 +7,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/redhat-ai-dev/ai-rolling-demo-gitops.git
-    targetRevision: HEAD
+    repoURL: https://github.com/gabemontero/ai-rolling-demo-gitops.git
+    targetRevision: fix-pers-cluster
     path: ./charts/rhdh
     helm:
       valueFiles:
