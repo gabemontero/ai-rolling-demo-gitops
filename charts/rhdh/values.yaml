@@ -15,8 +15,9 @@ global:
                   importName: RollingDemoCustomizedSignInPage
 
       ##### Red Hat Plugins without wrappers #####
-      # Plugins for ArgoCD integration
+      # Plugins for ArgoCD integration (disabled: no GitOps on this branch)
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/backstage-community-plugin-argocd:bs_1.49.4__2.8.0
+        disabled: true
         pluginConfig:
           dynamicPlugins:
             frontend:
@@ -41,9 +42,9 @@ global:
                         allOf:
                           - isArgocdConfigured
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/roadiehq-backstage-plugin-argo-cd-backend:bs_1.49.4__4.8.0
-        disabled: false
+        disabled: true
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/roadiehq-scaffolder-backend-argocd:bs_1.49.4__1.8.1
-        disabled: false
+        disabled: true
 
       # MCP Actions plugins
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/backstage-plugin-mcp-actions-backend:bs_1.49.4__0.1.11
@@ -55,16 +56,16 @@ global:
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/red-hat-developer-hub-backstage-plugin-scaffolder-mcp-extras:bs_1.49.4__0.4.1
         disabled: false
 
-      # Model Catalog Plugins
+      # Model Catalog Plugins (disabled: no RHOAI on this branch)
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/red-hat-developer-hub-backstage-plugin-catalog-backend-module-model-catalog:bs_1.49.4__0.9.0
-        disabled: false
+        disabled: true
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/red-hat-developer-hub-backstage-plugin-catalog-techdoc-url-reader-backend:bs_1.49.4__0.5.0
-        disabled: false
+        disabled: true
 
-      # Tekton Pipelines Plugins
+      # Tekton Pipelines Plugins (disabled: no Pipelines on this branch)
       # Tekton CI Plugins
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/backstage-community-plugin-tekton:bs_1.49.4__3.37.0
-        disabled: false
+        disabled: true
         pluginConfig:
           dynamicPlugins:
             frontend:
@@ -489,22 +490,13 @@ backstage:
               rules:
                 - allow: [Component, System]
               type: url
-            - target: https://github.com/redhat-ai-dev/ai-lab-template/blob/ai-rolling-demo-1_10/all.yaml
-              type: url
-              rules:
-                - allow: [Component, Location, Template]
-            - target: https://github.com/redhat-ai-dev/llama-stack-agentic-sample/blob/ai-rolling-demo-1_10/all.yaml
-              type: url
-              rules:
-                - allow: [Component, Location, Template]
-            - target: https://github.com/redhat-ai-dev/ai-rolling-demo-gitops/blob/development/catalog-info.yaml
+            # AI Lab and Agentic templates removed: they depend on Tekton Pipelines
+            - target: https://github.com/redhat-ai-dev/ai-rolling-demo-gitops/blob/no-tekton-gitops/catalog-info.yaml
               type: url
               rules:
                 - allow: [Component, System]
           providers:
-            modelCatalog:
-              development:
-                baseUrl: http://localhost:9090
+            # modelCatalog removed: depends on RHOAI
             github:
               providerId:
                 organization: "${GITOPS_GIT_ORG}"
@@ -571,30 +563,13 @@ backstage:
                   url: https://kubernetes.default.svc
               type: config
           customResources:
-            - apiVersion: v1beta1
-              group: tekton.dev
-              plural: pipelines
-            - apiVersion: v1beta1
-              group: tekton.dev
-              plural: pipelineruns
-            - apiVersion: v1beta1
-              group: tekton.dev
-              plural: taskruns
+            # Tekton resources removed: no Pipelines on this branch
             - apiVersion: v1
               group: route.openshift.io
               plural: routes
           serviceLocatorMethod:
             type: multiTenant
-        argocd:
-          username: ${ARGOCD_USER}
-          password: ${ARGOCD_PASSWORD}
-          waitCycles: 25
-          appLocatorMethods:
-          - type: 'config'
-            instances:
-              - name: default
-                url: https://${ARGOCD_HOSTNAME}
-                token: ${ARGOCD_API_TOKEN}
+        # argocd config removed: no GitOps on this branch
         i18n:
           locales:
             - en
@@ -647,7 +622,7 @@ backstage:
         - kubernetes-secrets
         - rhdh-secrets
         - keycloak-secrets
-        - argocd-secrets
+        # argocd-secrets removed: no GitOps on this branch
         - lightspeed-secrets
         - llama-stack-secrets
       args:

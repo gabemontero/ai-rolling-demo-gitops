@@ -16,7 +16,15 @@ export RHDH_BASE_URL RHDH_CALLBACK_URL
 # check_tools: verifies that all required CLI tools are installed
 check_tools() {
   local missing=()
-  local tools=("oc" "kubectl" "yq" "argocd" "cosign" "openssl" "envsubst")
+  local tools=("oc" "kubectl" "yq" "openssl" "envsubst")
+
+  if [[ "${SKIP_GITOPS_SETUP}" != "true" ]]; then
+    tools+=("argocd")
+  fi
+  if [[ "${SKIP_PIPELINES_SETUP}" != "true" ]]; then
+    tools+=("cosign")
+  fi
+  tools+=("helm")
 
   for tool in "${tools[@]}"; do
     if ! command -v "$tool" >/dev/null 2>&1; then
@@ -42,7 +50,6 @@ required_vars=(
   GITOPS_REPO_URL
   GITOPS_TARGET_REVISION
   RHDH_CLUSTER_ROUTER_BASE
-  ODH_SETUP_DIR
   GITOPS_GIT_ORG
   GITHUB_APP_APP_ID
   GITHUB_APP_CLIENT_ID
@@ -50,7 +57,6 @@ required_vars=(
   GITHUB_APP_WEBHOOK_URL
   GITHUB_APP_WEBHOOK_SECRET
   GITHUB_APP_PRIVATE_KEY
-  ARGOCD_USER
   BACKEND_SECRET
   RHDH_CALLBACK_URL
   POSTGRESQL_POSTGRES_PASSWORD
@@ -67,6 +73,12 @@ required_vars=(
   VALIDATION_PROVIDER
   VALIDATION_MODEL_NAME
 )
+if [[ "${SKIP_RHOAI_SETUP}" != "true" ]]; then
+  required_vars+=(ODH_SETUP_DIR)
+fi
+if [[ "${SKIP_GITOPS_SETUP}" != "true" ]]; then
+  required_vars+=(ARGOCD_USER)
+fi
 for var in "${required_vars[@]}"; do
   if [ -z "${!var}" ]; then
     log "Error: $var is not set. Exiting..."
@@ -88,13 +100,28 @@ else
 fi
 
 # source other setup scripts to create namespaces, service accounts, secrets, and ArgoCD setup
-source "$SCRIPTS_DIR/setup-argocd.sh"
+if [[ "${SKIP_GITOPS_SETUP}" == "true" ]]; then
+  log "SKIP_GITOPS_SETUP=true — skipping ArgoCD setup."
+else
+  source "$SCRIPTS_DIR/setup-argocd.sh"
+fi
 source "$SCRIPTS_DIR/setup-namespaces.sh"
 source "$SCRIPTS_DIR/setup-sa-tokens.sh"
 source "$SCRIPTS_DIR/setup-secrets.sh"
 
-# finally apply ArgoCD applications to deploy the demo components
-bash "$SCRIPTS_DIR/setup-pipelines.sh"
-bash "$SCRIPTS_DIR/apply-argocd-application.sh"
+# deploy RHDH and configure pipelines
+if [[ "${SKIP_PIPELINES_SETUP}" == "true" ]]; then
+  log "SKIP_PIPELINES_SETUP=true — skipping Tekton Pipelines setup."
+else
+  bash "$SCRIPTS_DIR/setup-pipelines.sh"
+fi
+if [[ "${SKIP_GITOPS_SETUP}" == "true" ]]; then
+  log "SKIP_GITOPS_SETUP=true — deploying RHDH via Helm (no ArgoCD)."
+  if ! bash "$SCRIPTS_DIR/helm-install.sh"; then
+    exit 1
+  fi
+else
+  bash "$SCRIPTS_DIR/apply-argocd-application.sh"
+fi
 
 log "Rolling Demo Setup Completed Successfully!"

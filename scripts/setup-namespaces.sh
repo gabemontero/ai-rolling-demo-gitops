@@ -45,11 +45,15 @@ add_argocd_label() {
 log "Creating new namespace for $RHDH_NAMESPACE..."
 create_namespace "$RHDH_NAMESPACE"
 
-# lightspeed-postgres namespace is only needed on OpenShift (requires ArgoCD and RHOAI)
+# lightspeed-postgres namespace is only needed on OpenShift
 if is_openshift; then
   log "Creating new project for $LIGHTSPEED_POSTGRES_NAMESPACE..."
   create_namespace "$LIGHTSPEED_POSTGRES_NAMESPACE"
 
-  log "Labeling $LIGHTSPEED_POSTGRES_NAMESPACE for ArgoCD management..."
-  add_argocd_label "$LIGHTSPEED_POSTGRES_NAMESPACE"
+  if [[ "${SKIP_GITOPS_SETUP}" == "true" ]]; then
+    log "SKIP_GITOPS_SETUP=true — skipping ArgoCD label on $LIGHTSPEED_POSTGRES_NAMESPACE."
+  else
+    log "Labeling $LIGHTSPEED_POSTGRES_NAMESPACE for ArgoCD management..."
+    add_argocd_label "$LIGHTSPEED_POSTGRES_NAMESPACE"
+  fi
 fi

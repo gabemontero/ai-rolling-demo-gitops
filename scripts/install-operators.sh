@@ -215,7 +215,9 @@ wait_for_cluster_policy() {
 # install_deps: installs all required operators and their instances
 install_deps() {
   # install OpenShift GitOps Operator if it doesn't exist
-  if check_operator_exists "$GITOPS_OPERATOR_NAMESPACE" "$GITOPS_OPERATOR_PACKAGE"; then
+  if [[ "${SKIP_GITOPS_SETUP}" == "true" ]]; then
+    log "SKIP_GITOPS_SETUP=true — skipping OpenShift GitOps Operator installation."
+  elif check_operator_exists "$GITOPS_OPERATOR_NAMESPACE" "$GITOPS_OPERATOR_PACKAGE"; then
     log "OpenShift GitOps Operator already installed. Skipping."
   else
     log "OpenShift GitOps Operator not found. Installing..."
@@ -224,7 +226,9 @@ install_deps() {
   fi
 
   # install OpenShift Pipelines Operator if it doesn't exist
-  if check_operator_exists "$PIPELINES_OPERATOR_NAMESPACE" "$PIPELINES_OPERATOR_PACKAGE"; then
+  if [[ "${SKIP_PIPELINES_SETUP}" == "true" ]]; then
+    log "SKIP_PIPELINES_SETUP=true — skipping OpenShift Pipelines Operator installation."
+  elif check_operator_exists "$PIPELINES_OPERATOR_NAMESPACE" "$PIPELINES_OPERATOR_PACKAGE"; then
     log "OpenShift Pipelines Operator already installed. Skipping."
   else
     log "OpenShift Pipelines Operator not found. Installing..."

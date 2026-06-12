@@ -98,31 +98,39 @@ kubectl create secret generic "$SECRET_NAME" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
 log "Secret $SECRET_NAME created successfully."
 
-SECRET_NAME="argocd-secrets"
-log "Creating $SECRET_NAME secret..."
-kubectl create secret generic "$SECRET_NAME" \
-    --namespace="$RHDH_NAMESPACE" \
-    --from-literal=ARGOCD_USER="$ARGOCD_USER" \
-    --from-literal=ARGOCD_PASSWORD="$ARGOCD_PASSWORD" \
-    --from-literal=ARGOCD_HOSTNAME="$ARGOCD_HOSTNAME" \
-    --from-literal=ARGOCD_API_TOKEN="$ARGOCD_API_TOKEN" \
-    --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
-log "Secret $SECRET_NAME created successfully."
+if [[ "${SKIP_GITOPS_SETUP}" == "true" ]]; then
+  log "SKIP_GITOPS_SETUP=true — skipping argocd-secrets."
+else
+  SECRET_NAME="argocd-secrets"
+  log "Creating $SECRET_NAME secret..."
+  kubectl create secret generic "$SECRET_NAME" \
+      --namespace="$RHDH_NAMESPACE" \
+      --from-literal=ARGOCD_USER="$ARGOCD_USER" \
+      --from-literal=ARGOCD_PASSWORD="$ARGOCD_PASSWORD" \
+      --from-literal=ARGOCD_HOSTNAME="$ARGOCD_HOSTNAME" \
+      --from-literal=ARGOCD_API_TOKEN="$ARGOCD_API_TOKEN" \
+      --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
+  log "Secret $SECRET_NAME created successfully."
+fi
 
 # only create pipeline-as-code-secret and lightspeed-postgres-info secrets if
 # this is not a secondary instance, as they are only needed for the initial RHDH
 # instance in the cluster, and not for any additional RHDH instances we might want
 # to deploy in the same cluster
 if [[ "${IS_SECONDARY_INSTANCE}" != "true" ]]; then
-  SECRET_NAME="pipelines-as-code-secret"
-  log "Creating $SECRET_NAME secret..."
-  kubectl create secret generic "$SECRET_NAME" \
-      --namespace="$PAC_NAMESPACE" \
-      --from-literal=github-application-id="$GITHUB_APP_APP_ID" \
-      --from-literal=github-private-key="$GITHUB_APP_PRIVATE_KEY" \
-      --from-literal=webhook.secret="$GITHUB_APP_WEBHOOK_SECRET" \
-      --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
-  log "Secret $SECRET_NAME created successfully."
+  if [[ "${SKIP_PIPELINES_SETUP}" == "true" ]]; then
+    log "SKIP_PIPELINES_SETUP=true — skipping pipelines-as-code-secret."
+  else
+    SECRET_NAME="pipelines-as-code-secret"
+    log "Creating $SECRET_NAME secret..."
+    kubectl create secret generic "$SECRET_NAME" \
+        --namespace="$PAC_NAMESPACE" \
+        --from-literal=github-application-id="$GITHUB_APP_APP_ID" \
+        --from-literal=github-private-key="$GITHUB_APP_PRIVATE_KEY" \
+        --from-literal=webhook.secret="$GITHUB_APP_WEBHOOK_SECRET" \
+        --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
+    log "Secret $SECRET_NAME created successfully."
+  fi
 
   SECRET_NAME="lightspeed-postgres-info"
   log "Creating $SECRET_NAME secret in $LIGHTSPEED_POSTGRES_NAMESPACE..."
