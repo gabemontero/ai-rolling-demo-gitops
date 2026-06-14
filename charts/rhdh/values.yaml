@@ -46,6 +46,22 @@ global:
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/roadiehq-scaffolder-backend-argocd:bs_1.49.4__1.8.1
         disabled: true
 
+      ##### Augment AI Platform Plugin #####
+      - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.1.0!red-hat-developer-hub-backstage-plugin-augment
+        disabled: false
+        pluginConfig:
+          dynamicPlugins:
+            frontend:
+              red-hat-developer-hub.backstage-plugin-augment:
+                dynamicRoutes:
+                  - path: /augment
+                    importName: AugmentPage
+                    menuItem:
+                      icon: chat
+                      text: Augment
+      - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.1.0!red-hat-developer-hub-backstage-plugin-augment-backend
+        disabled: false
+
       # MCP Actions plugins
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/backstage-plugin-mcp-actions-backend:bs_1.49.4__0.1.11
         disabled: false
@@ -540,6 +556,26 @@ backstage:
           mcpServers:
             - name: mcp-integration-tools
               token: ${MCP_TOKEN}
+        augment:
+          provider: llamastack
+          security:
+            mode: 'none'
+            adminUsers:
+              - 'user:default/admin'
+          llamaStack:
+            baseUrl: ${AUGMENT_LLAMA_STACK_URL}
+            model: ${AUGMENT_MODEL}
+            skipTlsVerify: true
+          kagenti:
+            baseUrl: ${KAGENTI_BASE_URL}
+            namespace: ${KAGENTI_NAMESPACE}
+            auth:
+              tokenEndpoint: ${KAGENTI_TOKEN_ENDPOINT}
+              clientId: ${KAGENTI_CLIENT_ID}
+              clientSecret: ${KAGENTI_CLIENT_SECRET}
+            showAllNamespaces: true
+            skipTlsVerify: true
+            verboseStreamLogging: true
         mcpActions:
           namespacedToolNames: false
         integrations:
@@ -625,6 +661,7 @@ backstage:
         # argocd-secrets removed: no GitOps on this branch
         - lightspeed-secrets
         - llama-stack-secrets
+        - augment-secrets
       args:
         - "--config"
         - dynamic-plugins-root/app-config.dynamic-plugins.yaml

@@ -39,6 +39,20 @@ kubectl create secret generic "$SECRET_NAME" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
 log "Secret $SECRET_NAME created successfully."
 
+SECRET_NAME="augment-secrets"
+log "Creating $SECRET_NAME secret..."
+kubectl create secret generic "$SECRET_NAME" \
+    --namespace="$RHDH_NAMESPACE" \
+    --from-literal=AUGMENT_LLAMA_STACK_URL="$AUGMENT_LLAMA_STACK_URL" \
+    --from-literal=AUGMENT_MODEL="$AUGMENT_MODEL" \
+    --from-literal=KAGENTI_BASE_URL="$KAGENTI_BASE_URL" \
+    --from-literal=KAGENTI_NAMESPACE="$KAGENTI_NAMESPACE" \
+    --from-literal=KAGENTI_TOKEN_ENDPOINT="$KAGENTI_TOKEN_ENDPOINT" \
+    --from-literal=KAGENTI_CLIENT_ID="$KAGENTI_CLIENT_ID" \
+    --from-literal=KAGENTI_CLIENT_SECRET="$KAGENTI_CLIENT_SECRET" \
+    --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
+log "Secret $SECRET_NAME created successfully."
+
 SECRET_NAME="kubernetes-secrets"
 log "Creating $SECRET_NAME secret..."
 kubectl create secret generic "$SECRET_NAME" \

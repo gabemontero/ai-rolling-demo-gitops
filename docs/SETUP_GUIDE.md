@@ -8,14 +8,17 @@ Here are the steps required to setup an instance of the rolling demo on your own
 
 Two install paths are available depending on your cluster size:
 
-| Install command         | Minimum node type      | GPU nodes | RHOAI required |
-| ----------------------- | ---------------------- | --------- | -------------- |
-| `make install`          | `g5.2xlarge` or bigger | Yes       | Yes            |
-| `make install-no-rhoai` | Any OCP node           | No        | No             |
+| Install command           | Minimum node type      | GPU nodes | RHOAI required | ArgoCD / Pipelines |
+| ------------------------- | ---------------------- | --------- | -------------- | ------------------ |
+| `make install`            | `g5.2xlarge` or bigger | Yes       | Yes            | Yes                |
+| `make install-no-rhoai`   | Any OCP node           | No        | No             | Yes                |
+| `make install-lightspeed-augment-only` | Any OCP node           | No        | No             | No                 |
 
 For `make install` (full stack), you need an [OpenShift cluster (version 4.19+)](https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html-single/web_console/index) with GPU-capable nodes (`g5.2xlarge` or bigger), and you must also clone the [odh-kubeflow-model-registry-setup](https://github.com/redhat-ai-dev/odh-kubeflow-model-registry-setup) repo locally.
 
 For `make install-no-rhoai` (lightweight), any OCP 4.19+ cluster works — no GPU nodes, no RHOAI, and no `odh-kubeflow-model-registry-setup` repo is needed. Set `ODH_SETUP_DIR` to any non-empty placeholder value (e.g., `"n/a"`) in your `private-env` since the script validates it is set but will not use it when `SKIP_RHOAI_SETUP=true`.
+
+For `make install-lightspeed-augment-only` (minimal), any OCP 4.19+ cluster works. This target skips RHOAI, OpenShift GitOps (ArgoCD), and OpenShift Pipelines entirely, deploying RHDH via direct Helm install instead of ArgoCD. Only Keycloak auth, Lightspeed, the Augment AI platform plugin, and notebook-related plugins are enabled.
 
 #### Dependencies
 
@@ -122,6 +125,30 @@ export NOTEBOOKS_QUERY_MODEL="llama-31-8b-version1"
 export LIGHTSPEED_POSTGRES_PASSWORD="your-preffered-lightspeed-psql-password"
 export LIGHTSPEED_POSTGRES_USER="your-preffered-lightspeed-psql-username"
 export LIGHTSPEED_POSTGRES_DB="your-preffered-lightspeed-psql-dbname"
+
+# Augment plugin secrets — LlamaStack Responses API provider
+# AUGMENT_LLAMA_STACK_URL: Base URL for the Llama Stack server that provides the
+# OpenAI-compatible Responses API. Use the in-cluster service URL if Llama Stack
+# is deployed on the same cluster.
+export AUGMENT_LLAMA_STACK_URL="http://llamastack-service.llamastack.svc.cluster.local:8321"
+# AUGMENT_MODEL: LLM model identifier as registered in Llama Stack.
+export AUGMENT_MODEL="gpt-4.1"
+
+# Augment plugin secrets — Kagenti AgenticProviders
+# KAGENTI_BASE_URL: Base URL for the Kagenti API server.
+export KAGENTI_BASE_URL="http://kagenti-api.kagenti-system.svc.cluster.local:8080"
+# KAGENTI_NAMESPACE: Default Kagenti namespace for agent discovery.
+export KAGENTI_NAMESPACE="team1"
+# KAGENTI_TOKEN_ENDPOINT: Keycloak OAuth token endpoint for the kagenti realm.
+# Use the external route if Keycloak is in a different namespace than RHDH.
+export KAGENTI_TOKEN_ENDPOINT="https://keycloak-keycloak.apps.mycluster.openshift.com/realms/kagenti/protocol/openid-connect/token"
+# KAGENTI_CLIENT_ID: OAuth2 client ID. The Kagenti operator auto-creates
+# per-namespace clients in Keycloak with SPIFFE-based IDs.
+# Find yours with: kubectl get secret kagenti-keycloak-client-secret -n <namespace> -o jsonpath='{.data}'
+export KAGENTI_CLIENT_ID="spiffe://apps.mycluster.openshift.com/sa/kagenti-keycloak-client"
+# KAGENTI_CLIENT_SECRET: OAuth2 client secret from the Keycloak kagenti realm.
+# Retrieve from: kubectl get secret kagenti-keycloak-client-secret -n team1 -o jsonpath='{.data.client-secret}' | base64 -d
+export KAGENTI_CLIENT_SECRET="your-kagenti-client-secret"
 ```
 
 ### Installation
@@ -134,6 +161,9 @@ make install
 
 # Lightweight install — no GPU, no RHOAI, no Model Catalog Bridge
 make install-no-rhoai
+
+# Minimal install — RHDH + Keycloak + Lightspeed + Augment only (no ArgoCD, no Pipelines)
+make install-lightspeed-augment-only
 ```
 
 #### `make install-no-rhoai` — lightweight install for smaller clusters
@@ -155,6 +185,39 @@ make install-no-rhoai
 - Developer Lightspeed and its PostgreSQL instance
 - AI Software Templates
 - All Kubernetes secrets, service accounts, and namespaces
+
+#### `make install-lightspeed-augment-only` — minimal install with Augment AI platform
+
+`make install-lightspeed-augment-only` sets `SKIP_RHOAI_SETUP=true`, `SKIP_GITOPS_SETUP=true`, and `SKIP_PIPELINES_SETUP=true`. RHDH is deployed via direct Helm install instead of ArgoCD.
+
+**What is skipped:**
+
+- Everything skipped by `make install-no-rhoai`, plus:
+- OpenShift GitOps operator (ArgoCD) — RHDH is deployed via `helm upgrade --install` instead
+- OpenShift Pipelines operator and Pipelines-as-Code
+- ArgoCD, Tekton, and Model Catalog plugins (disabled in the Helm chart)
+- AI Lab and Agentic software templates (depend on Pipelines)
+
+**What is still installed:**
+
+- RHDH (via direct Helm install)
+- Keycloak OIDC authentication
+- Developer Lightspeed and its PostgreSQL instance
+- Augment AI platform plugin (LlamaStack + Kagenti providers)
+- Notebook plugins
+- MCP Actions plugins
+- All required Kubernetes secrets, service accounts, and namespaces
+
+**`private-env` notes for `make install-lightspeed-augment-only`:**
+
+The Augment plugin env vars (`AUGMENT_LLAMA_STACK_URL`, `AUGMENT_MODEL`, `KAGENTI_*`) must be populated. The Kagenti client secret can be retrieved from the cluster where the Kagenti operator is running:
+
+```bash
+kubectl get secret kagenti-keycloak-client-secret -n team1 \
+  -o jsonpath='{.data.client-secret}' | base64 -d
+```
+
+`ODH_SETUP_DIR` and `ARGOCD_USER` are not required for this target.
 
 **`private-env` note for `make install-no-rhoai`:**
 
@@ -181,6 +244,8 @@ You can skip earlier steps if they have already been completed on your cluster:
 
 - `SKIP_INSTALL_DEPS=true` — skips all operator and instance installation.
 - `SKIP_RHOAI_SETUP=true` — skips NFD + GPU operator installation, RHOAI setup, and disables Model Catalog sidecars (`location`, `storage-rest`, `rhoai-normalizer`) and RBAC in the deployed chart. This is what `make install-no-rhoai` sets.
+- `SKIP_GITOPS_SETUP=true` — skips OpenShift GitOps (ArgoCD) operator installation and ArgoCD setup. RHDH is deployed via direct Helm install instead.
+- `SKIP_PIPELINES_SETUP=true` — skips OpenShift Pipelines operator installation and Pipelines-as-Code setup.
 
 For example, to jump straight to the rolling demo preparation:
 

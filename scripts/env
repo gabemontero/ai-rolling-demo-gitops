@@ -54,3 +54,14 @@ export NOTEBOOKS_QUERY_MODEL=
 export LIGHTSPEED_POSTGRES_PASSWORD=
 export LIGHTSPEED_POSTGRES_USER=
 export LIGHTSPEED_POSTGRES_DB=
+
+# Augment plugin secrets — LlamaStack Responses API provider
+export AUGMENT_LLAMA_STACK_URL=
+export AUGMENT_MODEL=
+
+# Augment plugin secrets — Kagenti AgenticProviders
+export KAGENTI_BASE_URL=
+export KAGENTI_NAMESPACE=
+export KAGENTI_TOKEN_ENDPOINT=
+export KAGENTI_CLIENT_ID=
+export KAGENTI_CLIENT_SECRET=

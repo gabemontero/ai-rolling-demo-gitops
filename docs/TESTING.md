@@ -72,6 +72,17 @@ export ARGOCD_API_TOKEN="<token>"   # see "ArgoCD Devcluster Test User Creds" on
 # local changes on a Kind cluster.
 export ROLLING_DEMO_TEST_USERNAME="<keycloak-username>"
 export RHDH_ENVIRONMENT="production"
+
+# Augment plugin — LlamaStack Responses API
+export AUGMENT_LLAMA_STACK_URL="http://llamastack-service.llamastack.svc.cluster.local:8321"
+export AUGMENT_MODEL="gpt-4.1"
+
+# Augment plugin — Kagenti AgenticProviders
+export KAGENTI_BASE_URL="http://kagenti-api.kagenti-system.svc.cluster.local:8080"
+export KAGENTI_NAMESPACE="team1"
+export KAGENTI_TOKEN_ENDPOINT="https://<keycloak-host>/realms/kagenti/protocol/openid-connect/token"
+export KAGENTI_CLIENT_ID="<spiffe-or-client-id>"
+export KAGENTI_CLIENT_SECRET="<kagenti-client-secret>"
 ```
 
 **Note**: The `RHDH_CLUSTER_ROUTER_BASE` is overriden automatically by `ci-setup.sh` in testing mode, so the `scripts/private-env` value is ignored. The value used for testing is `apps.testing`
@@ -126,6 +137,13 @@ The CI PR check workflow (`.github/workflows/ci-pr-check.yaml`) reads the same v
 | `ARGOCD_API_TOKEN`             | ArgoCD API token                              |
 | `ROLLING_DEMO_TEST_USERNAME`   | Keycloak username used by E2E tests           |
 | `RHDH_ENVIRONMENT`             | Environment label passed to tests (e.g. `ci`) |
+| `AUGMENT_LLAMA_STACK_URL`      | LlamaStack Responses API base URL              |
+| `AUGMENT_MODEL`                | LLM model identifier for Augment               |
+| `KAGENTI_BASE_URL`             | Kagenti API server base URL                    |
+| `KAGENTI_NAMESPACE`            | Default Kagenti namespace                      |
+| `KAGENTI_TOKEN_ENDPOINT`       | Keycloak OAuth token endpoint (kagenti realm)  |
+| `KAGENTI_CLIENT_ID`            | Kagenti OAuth2 client ID                       |
+| `KAGENTI_CLIENT_SECRET`        | Kagenti OAuth2 client secret                   |
 
 ## Troubleshooting
 
