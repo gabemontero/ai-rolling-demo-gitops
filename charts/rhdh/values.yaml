@@ -557,7 +557,7 @@ backstage:
             - name: mcp-integration-tools
               token: ${MCP_TOKEN}
         augment:
-          provider: llamastack
+          provider: kagenti
           security:
             mode: 'none'
             adminUsers:
