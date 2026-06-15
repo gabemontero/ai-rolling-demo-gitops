@@ -580,6 +580,12 @@ backstage:
             showAllNamespaces: true
             skipTlsVerify: true
             verboseStreamLogging: true
+          mcpServers:
+            - id: weather-tool
+              name: Weather Tool
+              type: streamable-http
+              url: http://weather-tool-mcp.team1.svc.cluster.local:8000/mcp
+              requireApproval: never
         permission:
           enabled: ${PERMISSION_ENABLED}
           rbac:
