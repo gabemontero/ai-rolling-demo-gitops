@@ -62,6 +62,10 @@ global:
       - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.1.0!red-hat-developer-hub-backstage-plugin-augment-backend
         disabled: false
 
+      ##### RBAC Permission Plugin #####
+      - package: ./dynamic-plugins/dist/backstage-community-plugin-rbac
+        disabled: false
+
       # MCP Actions plugins
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/backstage-plugin-mcp-actions-backend:bs_1.49.4__0.1.11
         disabled: false
@@ -557,7 +561,7 @@ backstage:
             - name: mcp-integration-tools
               token: ${MCP_TOKEN}
         augment:
-          provider: kagenti
+          provider: ${AUGMENT_PROVIDER}
           security:
             mode: 'none'
             adminUsers:
@@ -576,6 +580,15 @@ backstage:
             showAllNamespaces: true
             skipTlsVerify: true
             verboseStreamLogging: true
+        permission:
+          enabled: ${PERMISSION_ENABLED}
+          rbac:
+            admin:
+              superUsers: []
+            pluginsWithPermission:
+              - catalog
+              - scaffolder
+              - permission
         mcpActions:
           namespacedToolNames: false
         integrations:

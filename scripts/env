@@ -55,6 +55,13 @@ export LIGHTSPEED_POSTGRES_PASSWORD=
 export LIGHTSPEED_POSTGRES_USER=
 export LIGHTSPEED_POSTGRES_DB=
 
+# RBAC / Permission framework
+export PERMISSION_ENABLED=
+export RBAC_ADMIN_USERS=
+
+# Augment plugin — provider selection (llamastack or kagenti)
+export AUGMENT_PROVIDER=
+
 # Augment plugin secrets — LlamaStack Responses API provider
 export AUGMENT_LLAMA_STACK_URL=
 export AUGMENT_MODEL=

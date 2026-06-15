@@ -126,6 +126,21 @@ export LIGHTSPEED_POSTGRES_PASSWORD="your-preffered-lightspeed-psql-password"
 export LIGHTSPEED_POSTGRES_USER="your-preffered-lightspeed-psql-username"
 export LIGHTSPEED_POSTGRES_DB="your-preffered-lightspeed-psql-dbname"
 
+# PERMISSION_ENABLED: Enable the Backstage permission framework with RBAC.
+# Set to "true" to enable. Default is "false" (all features open to all users).
+# With RBAC enabled, most features are denied by default — only superUsers
+# have unrestricted access.
+export PERMISSION_ENABLED="false"
+# RBAC_ADMIN_USERS: Comma-separated Keycloak usernames to grant superUser
+# access (unrestricted permissions) when RBAC is enabled. These become
+# user:default/<username> entity refs in the RHDH permission config.
+export RBAC_ADMIN_USERS="admin"
+
+# AUGMENT_PROVIDER: Which augment provider to activate on startup.
+# Valid values: "llamastack" (LlamaStack Responses API) or "kagenti" (Kagenti AgenticProviders).
+# This controls which provider's routes are registered at boot time.
+export AUGMENT_PROVIDER="kagenti"
+
 # Augment plugin secrets — LlamaStack Responses API provider
 # AUGMENT_LLAMA_STACK_URL: Base URL for the Llama Stack server that provides the
 # OpenAI-compatible Responses API. Use the in-cluster service URL if Llama Stack

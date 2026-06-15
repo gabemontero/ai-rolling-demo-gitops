@@ -43,6 +43,7 @@ SECRET_NAME="augment-secrets"
 log "Creating $SECRET_NAME secret..."
 kubectl create secret generic "$SECRET_NAME" \
     --namespace="$RHDH_NAMESPACE" \
+    --from-literal=AUGMENT_PROVIDER="$AUGMENT_PROVIDER" \
     --from-literal=AUGMENT_LLAMA_STACK_URL="$AUGMENT_LLAMA_STACK_URL" \
     --from-literal=AUGMENT_MODEL="$AUGMENT_MODEL" \
     --from-literal=KAGENTI_BASE_URL="$KAGENTI_BASE_URL" \
@@ -96,6 +97,7 @@ log "Creating $SECRET_NAME secret..."
 kubectl create secret generic "$SECRET_NAME" \
     --namespace="$RHDH_NAMESPACE" \
     --from-literal=BACKEND_SECRET="$BACKEND_SECRET" \
+    --from-literal=PERMISSION_ENABLED="${PERMISSION_ENABLED:-false}" \
     --from-literal=ADMIN_TOKEN="$RHDH_SA_TOKEN" \
     --from-literal=MCP_TOKEN="$MCP_TOKEN" \
     --from-literal=RHDH_BASE_URL="$RHDH_BASE_URL" \

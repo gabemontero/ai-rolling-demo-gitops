@@ -94,6 +94,15 @@ helm_install_rhdh() {
     --timeout 10m
   )
 
+  if [[ -n "${RBAC_ADMIN_USERS:-}" ]]; then
+    IFS=',' read -ra USERS <<< "$RBAC_ADMIN_USERS"
+    for i in "${!USERS[@]}"; do
+      local user
+      user=$(echo "${USERS[$i]}" | xargs)
+      helm_args+=(--set "upstream.backstage.appConfig.permission.rbac.admin.superUsers[$i].name=user:default/$user")
+    done
+  fi
+
   if ! helm "${helm_args[@]}"; then
     log "Helm install/upgrade failed."
     log_fail
