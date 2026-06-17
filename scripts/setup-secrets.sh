@@ -39,6 +39,26 @@ kubectl create secret generic "$SECRET_NAME" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
 log "Secret $SECRET_NAME created successfully."
 
+if [[ -z "${KAGENTI_CLIENT_ID:-}" ]]; then
+  KAGENTI_CLIENT_ID=$(kubectl get secret kagenti-keycloak-client-secret -n "${KAGENTI_NAMESPACE}" -o jsonpath='{.data.client-id}' 2>/dev/null | base64 -d 2>/dev/null || true)
+  if [[ -n "$KAGENTI_CLIENT_ID" ]]; then
+    log "Auto-resolved KAGENTI_CLIENT_ID from kagenti-keycloak-client-secret in ${KAGENTI_NAMESPACE} namespace."
+  else
+    log "Warning: KAGENTI_CLIENT_ID is not set and could not be auto-resolved from cluster. Using placeholder."
+    KAGENTI_CLIENT_ID="not-configured"
+  fi
+fi
+
+if [[ -z "${KAGENTI_CLIENT_SECRET:-}" ]]; then
+  KAGENTI_CLIENT_SECRET=$(kubectl get secret kagenti-keycloak-client-secret -n "${KAGENTI_NAMESPACE}" -o jsonpath='{.data.client-secret}' 2>/dev/null | base64 -d 2>/dev/null || true)
+  if [[ -n "$KAGENTI_CLIENT_SECRET" ]]; then
+    log "Auto-resolved KAGENTI_CLIENT_SECRET from kagenti-keycloak-client-secret in ${KAGENTI_NAMESPACE} namespace."
+  else
+    log "Warning: KAGENTI_CLIENT_SECRET is not set and could not be auto-resolved from cluster. Using placeholder."
+    KAGENTI_CLIENT_SECRET="not-configured"
+  fi
+fi
+
 SECRET_NAME="augment-secrets"
 log "Creating $SECRET_NAME secret..."
 kubectl create secret generic "$SECRET_NAME" \
