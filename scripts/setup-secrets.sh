@@ -125,6 +125,28 @@ kubectl create secret generic "$SECRET_NAME" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
 log "Secret $SECRET_NAME created successfully."
 
+# RBAC admin users ConfigMap — consumed via extraAppConfig by Backstage
+log "Creating rbac-app-config ConfigMap..."
+RBAC_SUPER_USERS_YAML="[]"
+if [[ -n "${RBAC_ADMIN_USERS:-}" ]]; then
+  RBAC_SUPER_USERS_YAML=""
+  IFS=',' read -ra _RBAC_USERS <<< "$RBAC_ADMIN_USERS"
+  for _u in "${_RBAC_USERS[@]}"; do
+    _u=$(echo "$_u" | xargs)
+    RBAC_SUPER_USERS_YAML+="
+        - name: 'user:default/$_u'"
+  done
+fi
+kubectl create configmap rbac-app-config \
+    --namespace="$RHDH_NAMESPACE" \
+    --from-literal=rbac-app-config.yaml="permission:
+  rbac:
+    admin:
+      superUsers: $RBAC_SUPER_USERS_YAML
+" \
+    --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
+log "rbac-app-config ConfigMap created successfully."
+
 SECRET_NAME="ai-rh-developer-hub-env"
 log "Creating $SECRET_NAME secret..."
 kubectl create secret generic "$SECRET_NAME" \

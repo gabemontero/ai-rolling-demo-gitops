@@ -412,6 +412,9 @@ backstage:
         pullSecrets:
           - quay-pull-secret
       command: []
+      extraAppConfig:
+        - filename: rbac-app-config.yaml
+          configMapRef: rbac-app-config
       appConfig:
         app:
           title: AI Rolling Demo Developer Hub
@@ -589,8 +592,6 @@ backstage:
         permission:
           enabled: ${PERMISSION_ENABLED}
           rbac:
-            admin:
-              superUsers: []
             pluginsWithPermission:
               - catalog
               - scaffolder
