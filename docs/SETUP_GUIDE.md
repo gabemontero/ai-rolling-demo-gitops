@@ -136,6 +136,16 @@ export PERMISSION_ENABLED="false"
 # user:default/<username> entity refs in the RHDH permission config.
 export RBAC_ADMIN_USERS="admin"
 
+# INSTALL_ORCHESTRATOR: Set to "true" to install the RHDH Orchestrator plugin
+# and its infrastructure dependencies (Serverless + Serverless Logic operators).
+# The orchestrator-infra Helm chart is installed first, then the RHDH chart is
+# deployed with orchestrator.enabled=true. Default is unset (orchestrator skipped).
+export INSTALL_ORCHESTRATOR="true"
+# ORCHESTRATOR_INFRA_VERSION: Version of the orchestrator-infra Helm chart
+# (oci://quay.io/rhdh/orchestrator-infra-chart). Must match the RHDH release
+# version (e.g. "1.9-227-CI" for RHDH 1.9). Required when INSTALL_ORCHESTRATOR=true.
+export ORCHESTRATOR_INFRA_VERSION="1.9-227-CI"
+
 # AUGMENT_PROVIDER: Which augment provider to activate on startup.
 # Valid values: "llamastack" (LlamaStack Responses API) or "kagenti" (Kagenti AgenticProviders).
 # This controls which provider's routes are registered at boot time.

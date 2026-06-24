@@ -94,6 +94,10 @@ helm_install_rhdh() {
     --timeout 10m
   )
 
+  if [[ "${INSTALL_ORCHESTRATOR}" == "true" ]]; then
+    helm_args+=(--set "orchestrator.enabled=true")
+  fi
+
   if ! helm "${helm_args[@]}"; then
     log "Helm install/upgrade failed."
     log_fail

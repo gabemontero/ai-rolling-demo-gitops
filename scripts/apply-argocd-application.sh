@@ -32,6 +32,10 @@ apply_argocd_application() {
        {\"name\": \"$openshift_ai_param\", \"value\": \"$openshift_ai_url\"}
      ]"
   fi
+  if [[ "${INSTALL_ORCHESTRATOR}" == "true" ]]; then
+    helm_params=$(echo "$helm_params" | jq '. + [{"name": "orchestrator.enabled", "value": "true"}]')
+  fi
+
   if ! yq eval \
     ".metadata.name = \"$argocd_app_name\" |
      .spec.source.repoURL = \"$GITOPS_REPO_URL\" |

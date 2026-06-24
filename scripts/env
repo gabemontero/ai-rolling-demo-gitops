@@ -59,6 +59,10 @@ export LIGHTSPEED_POSTGRES_DB=
 export PERMISSION_ENABLED=
 export RBAC_ADMIN_USERS=
 
+# Orchestrator — RHDH Orchestrator plugin + infrastructure
+export INSTALL_ORCHESTRATOR=
+export ORCHESTRATOR_INFRA_VERSION=
+
 # Augment plugin — provider selection (llamastack or kagenti)
 export AUGMENT_PROVIDER=
 

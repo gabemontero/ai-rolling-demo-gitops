@@ -109,6 +109,13 @@ source "$SCRIPTS_DIR/setup-namespaces.sh"
 source "$SCRIPTS_DIR/setup-sa-tokens.sh"
 source "$SCRIPTS_DIR/setup-secrets.sh"
 
+# install orchestrator infrastructure (Serverless + Serverless Logic operators)
+if [[ "${INSTALL_ORCHESTRATOR}" == "true" ]]; then
+  bash "$SCRIPTS_DIR/install-orchestrator-infra.sh"
+else
+  log "INSTALL_ORCHESTRATOR is not true — skipping orchestrator infrastructure."
+fi
+
 # deploy RHDH and configure pipelines
 if [[ "${SKIP_PIPELINES_SETUP}" == "true" ]]; then
   log "SKIP_PIPELINES_SETUP=true — skipping Tekton Pipelines setup."
