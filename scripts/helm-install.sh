@@ -96,6 +96,7 @@ helm_install_rhdh() {
 
   if [[ "${INSTALL_ORCHESTRATOR}" == "true" ]]; then
     helm_args+=(--set "orchestrator.enabled=true")
+    helm_args+=(--set "backstage.orchestrator.enabled=true")
   fi
 
   if ! helm "${helm_args[@]}"; then

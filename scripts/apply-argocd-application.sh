@@ -33,7 +33,7 @@ apply_argocd_application() {
      ]"
   fi
   if [[ "${INSTALL_ORCHESTRATOR}" == "true" ]]; then
-    helm_params=$(echo "$helm_params" | jq '. + [{"name": "orchestrator.enabled", "value": "true"}]')
+    helm_params=$(echo "$helm_params" | jq '. + [{"name": "orchestrator.enabled", "value": "true"}, {"name": "backstage.orchestrator.enabled", "value": "true"}]')
   fi
 
   if ! yq eval \
