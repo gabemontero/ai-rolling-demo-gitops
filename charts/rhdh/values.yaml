@@ -596,6 +596,7 @@ backstage:
               - catalog
               - scaffolder
               - permission
+              - orchestrator
         mcpActions:
           namespacedToolNames: false
         integrations:
