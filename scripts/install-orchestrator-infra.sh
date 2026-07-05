@@ -31,6 +31,22 @@ install_orchestrator_infra() {
     exit 1
   fi
   log "Orchestrator infrastructure installed successfully."
+
+  log "Waiting for SonataFlow CRD to be registered by the Serverless Logic Operator..."
+  local elapsed=0
+  local crd_timeout=300
+  while (( elapsed < crd_timeout )); do
+    if kubectl api-resources --api-group=sonataflow.org 2>/dev/null | grep -q SonataFlowPlatform; then
+      log "SonataFlow CRD is available."
+      return 0
+    fi
+    sleep 10
+    elapsed=$((elapsed + 10))
+    log "Still waiting for SonataFlow CRD... (${elapsed}s/${crd_timeout}s)"
+  done
+  log "Timed out waiting for SonataFlow CRD after ${crd_timeout}s."
+  log_fail
+  exit 1
 }
 
 install_orchestrator_infra
