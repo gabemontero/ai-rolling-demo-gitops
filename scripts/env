@@ -62,6 +62,8 @@ export RBAC_ADMIN_USERS=
 # Orchestrator — RHDH Orchestrator plugin + infrastructure
 export INSTALL_ORCHESTRATOR=
 export ORCHESTRATOR_INFRA_VERSION=
+# Path to local rhdh-plugins clone (for deploying SonataFlow agent-approval workflow)
+export AUGMENT_PLUGINS_DIR=
 
 # Augment plugin — provider selection (llamastack or kagenti)
 export AUGMENT_PROVIDER=

@@ -131,4 +131,13 @@ else
   bash "$SCRIPTS_DIR/apply-argocd-application.sh"
 fi
 
+# deploy SonataFlow agent-approval workflow (requires orchestrator + RHDH running)
+if [[ "${INSTALL_ORCHESTRATOR}" == "true" && -n "${AUGMENT_PLUGINS_DIR:-}" ]]; then
+  bash "$SCRIPTS_DIR/deploy-agent-approval-workflow.sh"
+else
+  if [[ "${INSTALL_ORCHESTRATOR}" == "true" ]]; then
+    log "AUGMENT_PLUGINS_DIR not set — skipping agent-approval workflow deployment."
+  fi
+fi
+
 log "Rolling Demo Setup Completed Successfully!"

@@ -61,6 +61,11 @@ fi
 
 SECRET_NAME="augment-secrets"
 log "Creating $SECRET_NAME secret..."
+AGENT_APPROVAL_ENABLED="false"
+SONATAFLOW_URL="http://sonataflow.sonataflow-infra.svc:8080"
+if [[ "${INSTALL_ORCHESTRATOR:-}" == "true" ]]; then
+  AGENT_APPROVAL_ENABLED="true"
+fi
 kubectl create secret generic "$SECRET_NAME" \
     --namespace="$RHDH_NAMESPACE" \
     --from-literal=AUGMENT_PROVIDER="$AUGMENT_PROVIDER" \
@@ -71,6 +76,8 @@ kubectl create secret generic "$SECRET_NAME" \
     --from-literal=KAGENTI_TOKEN_ENDPOINT="$KAGENTI_TOKEN_ENDPOINT" \
     --from-literal=KAGENTI_CLIENT_ID="$KAGENTI_CLIENT_ID" \
     --from-literal=KAGENTI_CLIENT_SECRET="$KAGENTI_CLIENT_SECRET" \
+    --from-literal=AGENT_APPROVAL_ENABLED="$AGENT_APPROVAL_ENABLED" \
+    --from-literal=SONATAFLOW_URL="$SONATAFLOW_URL" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
 log "Secret $SECRET_NAME created successfully."
 

@@ -66,6 +66,16 @@ global:
       - package: ./dynamic-plugins/dist/backstage-community-plugin-rbac
         disabled: false
 
+      ##### Notifications + Signals Plugins (required for Orchestrator workflows) #####
+      - package: ./dynamic-plugins/dist/backstage-plugin-notifications
+        disabled: false
+      - package: ./dynamic-plugins/dist/backstage-plugin-notifications-backend-dynamic
+        disabled: false
+      - package: ./dynamic-plugins/dist/backstage-plugin-signals
+        disabled: false
+      - package: ./dynamic-plugins/dist/backstage-plugin-signals-backend-dynamic
+        disabled: false
+
       # MCP Actions plugins
       - package: oci://ghcr.io/redhat-developer/rhdh-plugin-export-overlays/backstage-plugin-mcp-actions-backend:bs_1.49.4__0.1.11
         disabled: false
@@ -583,6 +593,10 @@ backstage:
             showAllNamespaces: true
             skipTlsVerify: true
             verboseStreamLogging: true
+          agentApproval:
+            enabled: ${AGENT_APPROVAL_ENABLED}
+            serviceUrl: ${SONATAFLOW_URL}
+            workflowId: agentApproval
           mcpServers:
             - id: weather-tool
               name: Weather Tool
