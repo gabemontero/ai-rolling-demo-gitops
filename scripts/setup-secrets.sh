@@ -62,7 +62,7 @@ fi
 SECRET_NAME="augment-secrets"
 log "Creating $SECRET_NAME secret..."
 AGENT_APPROVAL_ENABLED="false"
-SONATAFLOW_URL="http://sonataflow.sonataflow-infra.svc:8080"
+SONATAFLOW_URL="http://agent-approval.${RHDH_NAMESPACE}.svc:80"
 if [[ "${INSTALL_ORCHESTRATOR:-}" == "true" ]]; then
   AGENT_APPROVAL_ENABLED="true"
 fi

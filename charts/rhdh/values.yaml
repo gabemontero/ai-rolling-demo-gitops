@@ -47,7 +47,7 @@ global:
         disabled: true
 
       ##### Augment AI Platform Plugin #####
-      - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.1.0!red-hat-developer-hub-backstage-plugin-augment
+      - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.2.0!red-hat-developer-hub-backstage-plugin-augment
         disabled: false
         pluginConfig:
           dynamicPlugins:
@@ -59,7 +59,7 @@ global:
                     menuItem:
                       icon: chat
                       text: Augment
-      - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.1.0!red-hat-developer-hub-backstage-plugin-augment-backend
+      - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.2.0!red-hat-developer-hub-backstage-plugin-augment-backend
         disabled: false
 
       ##### RBAC Permission Plugin #####
@@ -596,13 +596,20 @@ backstage:
           agentApproval:
             enabled: ${AGENT_APPROVAL_ENABLED}
             serviceUrl: ${SONATAFLOW_URL}
-            workflowId: agentApproval
+            workflowId: agent-approval
           mcpServers:
             - id: weather-tool
               name: Weather Tool
               type: streamable-http
               url: http://weather-tool-mcp.team1.svc.cluster.local:8000/mcp
               requireApproval: never
+        orchestrator:
+          sonataFlowService:
+            baseUrl: http://agent-approval
+            port: 80
+            path: /
+          dataIndexService:
+            url: http://agent-approval:80
         permission:
           enabled: ${PERMISSION_ENABLED}
           rbac:
@@ -717,7 +724,7 @@ backstage:
                   - ReadWriteOnce
                 resources:
                   requests:
-                    storage: 2Gi
+                    storage: 4Gi
         - name: dynamic-plugins
           configMap:
             defaultMode: 420
