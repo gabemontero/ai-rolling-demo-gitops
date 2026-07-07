@@ -8,7 +8,7 @@ SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPTS_DIR/common.sh"
 
 POLL_INTERVAL=10
-DEPLOY_TIMEOUT=600
+DEPLOY_TIMEOUT=900
 EXPECTED_CONTAINERS=3
 
 # wait_for_deployment: waits for the RHDH deployment to reach the expected
@@ -51,8 +51,8 @@ wait_for_deployment() {
 
   log "Running rollout status watch..."
   local remaining=$((DEPLOY_TIMEOUT - elapsed))
-  if (( remaining < 30 )); then
-    remaining=30
+  if (( remaining < 300 )); then
+    remaining=300
   fi
   if ! kubectl rollout status deployment/"$deploy_name" -n "$namespace" --timeout="${remaining}s"; then
     log "Deployment rollout did not complete in time."
