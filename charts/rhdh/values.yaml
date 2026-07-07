@@ -801,6 +801,8 @@ backstage:
               secretKeyRef:
                 key: postgres-password
                 name: "{{ .Release.Name }}-postgresql"
+          - name: POSTGRESQL_MAX_CONNECTIONS
+            value: "200"
   route:
     annotations: {}
     enabled: true
