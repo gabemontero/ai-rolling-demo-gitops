@@ -24,10 +24,10 @@ create_sa_tokens() {
 
   log "Creating token for 'k8s-sa' (1 year)..."
   K8S_CLUSTER_TOKEN=$(kubectl create token k8s-sa -n "$namespace" --duration 8760h 2>/dev/null)
-  log "Creating token for 'rhdh-sa'..."
-  RHDH_SA_TOKEN=$(kubectl create token rhdh-sa -n "$namespace" 2>/dev/null)
-  log "Creating token for 'mcp-actions-sa'..."
-  MCP_TOKEN=$(kubectl create token mcp-actions-sa -n "$namespace" 2>/dev/null)
+  log "Creating token for 'rhdh-sa' (1 year)..."
+  RHDH_SA_TOKEN=$(kubectl create token rhdh-sa -n "$namespace" --duration 8760h 2>/dev/null)
+  log "Creating token for 'mcp-actions-sa' (1 year)..."
+  MCP_TOKEN=$(kubectl create token mcp-actions-sa -n "$namespace" --duration 8760h 2>/dev/null)
 
   export K8S_CLUSTER_TOKEN
   export RHDH_SA_TOKEN

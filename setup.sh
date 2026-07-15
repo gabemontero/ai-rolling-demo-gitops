@@ -127,6 +127,9 @@ if [[ "${SKIP_GITOPS_SETUP}" == "true" ]]; then
   if ! bash "$SCRIPTS_DIR/helm-install.sh"; then
     exit 1
   fi
+  log "Restarting RHDH pod to pick up updated secrets..."
+  kubectl rollout restart deployment/"${ARGOCD_APP_NAME}-backstage" -n "$RHDH_NAMESPACE"
+  kubectl rollout status deployment/"${ARGOCD_APP_NAME}-backstage" -n "$RHDH_NAMESPACE" --timeout=300s
 else
   bash "$SCRIPTS_DIR/apply-argocd-application.sh"
 fi
