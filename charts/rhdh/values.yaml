@@ -62,6 +62,11 @@ global:
       - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.2.0!red-hat-developer-hub-backstage-plugin-augment-backend
         disabled: false
 
+      ##### Orchestrator chart-default overrides #####
+      # Placeholder: form-widgets is excluded via backstage.orchestrator.plugins
+      # below because its image is broken (missing io.backstage.dynamic-packages
+      # annotation across all 1.10.x builds).
+
       ##### RBAC Permission Plugin #####
       - package: ./dynamic-plugins/dist/backstage-community-plugin-rbac
         disabled: false
@@ -412,6 +417,17 @@ backstage:
   # of the same deployment resource (e.g. rolling-demo-backstage)
   # where the latest rhdh-chart introduces rolling-demo-developer-hub
   nameOverride: backstage
+  # Override chart's default orchestrator plugins list to exclude
+  # form-widgets (broken image, missing io.backstage.dynamic-packages
+  # annotation across all 1.10.x builds).
+  orchestrator:
+    plugins:
+      - package: 'oci://registry.access.redhat.com/rhdh/red-hat-developer-hub-backstage-plugin-orchestrator-backend:{{ "{{inherit}}" }}'
+        disabled: false
+      - package: 'oci://registry.access.redhat.com/rhdh/red-hat-developer-hub-backstage-plugin-orchestrator:{{ "{{inherit}}" }}'
+        disabled: false
+      - package: 'oci://registry.access.redhat.com/rhdh/red-hat-developer-hub-backstage-plugin-scaffolder-backend-module-orchestrator:{{ "{{inherit}}" }}'
+        disabled: false
   upstream:
     nameOverride: backstage
     backstage:
