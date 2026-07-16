@@ -62,6 +62,9 @@ export RBAC_ADMIN_USERS=
 # Orchestrator — RHDH Orchestrator plugin + infrastructure
 export INSTALL_ORCHESTRATOR=
 export ORCHESTRATOR_INFRA_VERSION=
+# Agent approval — auto-set to "true" when INSTALL_ORCHESTRATOR=true,
+# but can be explicitly set to "true" to enable approval without orchestrator
+export AGENT_APPROVAL_ENABLED=
 # Path to local rhdh-plugins clone (for deploying SonataFlow agent-approval workflow)
 export AUGMENT_PLUGINS_DIR=
 

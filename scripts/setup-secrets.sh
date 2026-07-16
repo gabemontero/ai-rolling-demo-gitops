@@ -61,10 +61,13 @@ fi
 
 SECRET_NAME="augment-secrets"
 log "Creating $SECRET_NAME secret..."
-AGENT_APPROVAL_ENABLED="false"
 SONATAFLOW_URL="http://agent-approval.${RHDH_NAMESPACE}.svc:80"
-if [[ "${INSTALL_ORCHESTRATOR:-}" == "true" ]]; then
-  AGENT_APPROVAL_ENABLED="true"
+if [[ -z "${AGENT_APPROVAL_ENABLED:-}" ]]; then
+  if [[ "${INSTALL_ORCHESTRATOR:-}" == "true" ]]; then
+    AGENT_APPROVAL_ENABLED="true"
+  else
+    AGENT_APPROVAL_ENABLED="false"
+  fi
 fi
 kubectl create secret generic "$SECRET_NAME" \
     --namespace="$RHDH_NAMESPACE" \
