@@ -39,10 +39,25 @@ kubectl create secret generic "$SECRET_NAME" \
     --dry-run=client -o yaml | kubectl apply --filename - --overwrite=true >/dev/null
 log "Secret $SECRET_NAME created successfully."
 
+_resolve_kagenti_keycloak_secret() {
+  local ns="$1" field="$2"
+  local val=""
+  # Try legacy secret name with legacy key names
+  val=$(kubectl get secret rossoctl-keycloak-client-secret -n "$ns" -o jsonpath="{.data.${field}}" 2>/dev/null | base64 -d 2>/dev/null || true)
+  if [[ -n "$val" ]]; then echo "$val"; return; fi
+  # Try new rossoctl-keycloak-client-credentials-* secret with .txt-suffixed keys
+  local secret_name
+  secret_name=$(kubectl get secrets -n "$ns" -o name 2>/dev/null | grep 'rossoctl-keycloak-client-credentials' | head -1 | sed 's|^secret/||')
+  if [[ -n "$secret_name" ]]; then
+    val=$(kubectl get secret "$secret_name" -n "$ns" -o jsonpath="{.data.${field}\.txt}" 2>/dev/null | base64 -d 2>/dev/null || true)
+    if [[ -n "$val" ]]; then echo "$val"; return; fi
+  fi
+}
+
 if [[ -z "${KAGENTI_CLIENT_ID:-}" ]]; then
-  KAGENTI_CLIENT_ID=$(kubectl get secret rossoctl-keycloak-client-secret -n "${KAGENTI_NAMESPACE}" -o jsonpath='{.data.client-id}' 2>/dev/null | base64 -d 2>/dev/null || true)
+  KAGENTI_CLIENT_ID=$(_resolve_kagenti_keycloak_secret "${KAGENTI_NAMESPACE}" "client-id")
   if [[ -n "$KAGENTI_CLIENT_ID" ]]; then
-    log "Auto-resolved KAGENTI_CLIENT_ID from rossoctl-keycloak-client-secret in ${KAGENTI_NAMESPACE} namespace."
+    log "Auto-resolved KAGENTI_CLIENT_ID from keycloak client secret in ${KAGENTI_NAMESPACE} namespace."
   else
     log "Warning: KAGENTI_CLIENT_ID is not set and could not be auto-resolved from cluster. Using placeholder."
     KAGENTI_CLIENT_ID="not-configured"
@@ -50,9 +65,9 @@ if [[ -z "${KAGENTI_CLIENT_ID:-}" ]]; then
 fi
 
 if [[ -z "${KAGENTI_CLIENT_SECRET:-}" ]]; then
-  KAGENTI_CLIENT_SECRET=$(kubectl get secret rossoctl-keycloak-client-secret -n "${KAGENTI_NAMESPACE}" -o jsonpath='{.data.client-secret}' 2>/dev/null | base64 -d 2>/dev/null || true)
+  KAGENTI_CLIENT_SECRET=$(_resolve_kagenti_keycloak_secret "${KAGENTI_NAMESPACE}" "client-secret")
   if [[ -n "$KAGENTI_CLIENT_SECRET" ]]; then
-    log "Auto-resolved KAGENTI_CLIENT_SECRET from rossoctl-keycloak-client-secret in ${KAGENTI_NAMESPACE} namespace."
+    log "Auto-resolved KAGENTI_CLIENT_SECRET from keycloak client secret in ${KAGENTI_NAMESPACE} namespace."
   else
     log "Warning: KAGENTI_CLIENT_SECRET is not set and could not be auto-resolved from cluster. Using placeholder."
     KAGENTI_CLIENT_SECRET="not-configured"
