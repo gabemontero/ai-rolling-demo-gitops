@@ -47,7 +47,7 @@ global:
         disabled: true
 
       ##### Augment AI Platform Plugin #####
-      - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.6.2!red-hat-developer-hub-backstage-plugin-augment
+      - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.7.0!red-hat-developer-hub-backstage-plugin-augment
         disabled: false
         pluginConfig:
           dynamicPlugins:
@@ -59,7 +59,7 @@ global:
                     menuItem:
                       icon: chat
                       text: Augment
-      - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.6.2!red-hat-developer-hub-backstage-plugin-augment-backend
+      - package: oci://quay.io/gabemontero/backstage-plugin-augment-all:v0.7.0!red-hat-developer-hub-backstage-plugin-augment-backend
         disabled: false
 
       ##### Orchestrator chart-default overrides #####
