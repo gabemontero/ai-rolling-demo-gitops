@@ -69,11 +69,7 @@ helm_install_rhdh() {
   local deploy_name="${argocd_app_name}-backstage"
 
   log "Adding RHDH Helm repository..."
-  if ! helm repo add rhdh https://redhat-developer.github.io/rhdh-chart/ 2>&1 | grep -v "already exists" ; then
-    log "Failed to add RHDH Helm repo."
-    log_fail
-    exit 1
-  fi
+  helm repo add rhdh https://redhat-developer.github.io/rhdh-chart/ >/dev/null 2>&1 || true
   helm repo update rhdh >/dev/null 2>&1
 
   log "Building Helm chart dependencies..."
