@@ -397,7 +397,7 @@ backstage:
               rules:
                 - allow: [Component, System]
               type: url
-            - target: https://github.com/redhat-developer/rhdh-ai-template/blob/ai-rolling-demo-1_10/all.yaml
+            - target: https://github.com/gabemontero/rhdh-ai-template/blob/upd-model-catalog-new-entity/all.yaml
               type: url
               rules:
                 - allow: [Component, Location, Template]
