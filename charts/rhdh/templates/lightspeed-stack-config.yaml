@@ -158,5 +158,4 @@ data:
       retrieval:
         tool:
           sources:
-            - okp
             - custom-org-docs
