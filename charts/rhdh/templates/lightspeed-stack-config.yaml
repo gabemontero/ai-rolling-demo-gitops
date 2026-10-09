@@ -146,10 +146,6 @@ data:
         authorization_headers:
           Authorization: 'client'
     rag:
-      okp:
-        rhokp_url: '${env.OKP_SERVICE_URL:=http://localhost:8080}'
-        offline: true
-        chunk_filter_query: 'product:*developer_hub*'
       byok:
         stores:
           - rag_id: custom-org-docs
